@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace NAFCommon.Base.Common.MethodResult
+namespace NAFCommon.Base
 {
     public class Result
     {

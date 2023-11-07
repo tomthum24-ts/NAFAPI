@@ -14,5 +14,7 @@ namespace NAFCommon.Base.Common.MethodResult
         public const string ResourceFolderName = "Resources";
         public const string TemplateFolderName = "Templates";
         public const string ForgotPassword = "forgotpassword";
+
+        public const string CommonErrorPrefix = "ERR_COM_";
     }
 }

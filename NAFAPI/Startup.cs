@@ -1,19 +1,23 @@
+using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
-using MediatR;
-using NAFAPI.APPLICATION.Commands.Account.Login;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Threading.Tasks;
-using NAF.INFRASTRUCTURE.Repositories.Account.Login;
+using Microsoft.OpenApi.Models;
+using NAF.INFRASTRUCTURE;
+using NAF.INFRASTRUCTURE.DataConnect;
 using NAF.INFRASTRUCTURE.Interface.Account.Login;
+using NAF.INFRASTRUCTURE.Interface.UnitOfWork;
+using NAF.INFRASTRUCTURE.Repositories.Account.Login;
+using NAF.INFRASTRUCTURE.UnitOfWork;
+using NAFAPI.APPLICATION.Commands.Account.Login;
+using System;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NAFAPI
 {
@@ -29,6 +33,12 @@ namespace NAFAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //User
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //services.AddDbContext<AppDbContext>(otp => otp.UseInMemoryDatabase("InMem"));
+            services.AddScoped<IUserRepository, UserRepository>();          
+            services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddDbContext<AppDbContext>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddAuthentication(x =>
             {
@@ -80,11 +90,9 @@ namespace NAFAPI
                             (path.StartsWithSegments("/hubs/chat")))
                         {
                             // Read the token out of the query string
-
                         }
                         return Task.CompletedTask;
                     }
-
                 };
             });
             //services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
@@ -95,10 +103,8 @@ namespace NAFAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NAFAPI", Version = "v1" });
             });
-
-
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddScoped<ILoginRepository, LoginRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddMediatR(typeof(Startup).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

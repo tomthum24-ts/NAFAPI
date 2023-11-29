@@ -5,9 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NAFCommon.Base.Common.MethodResult
 {
@@ -32,11 +30,6 @@ namespace NAFCommon.Base.Common.MethodResult
         public static string GetErrorMessage(string errorCode, Assembly resourceAssembly)
         {
             return GetErrorMessage(errorCode, ref _errorMessages, resourceAssembly);
-        }
-
-        public static string GetWarningMessage(string warningCode, Assembly resourceAssembly)
-        {
-            return GetWarningMessage(warningCode, ref _warningMessage, resourceAssembly);
         }
 
         public static string GetErrorMessage(string errorCode, ref ConcurrentDictionary<string, Dictionary<string, string>> errorMessages, Assembly resourceAssembly)
@@ -66,10 +59,8 @@ namespace NAFCommon.Base.Common.MethodResult
             {
                 try
                 {
-                    string jsonErrorFilePath = $"{Settings.ResourceFolderName}.{Settings.ErrorsFileName}-{currentLanguage}.json";
-                    //string jsonErrorFilePath = $"{Settings.ResourceFolderName}.{Settings.ErrorsFileName}.json";
-                    var fileData = GetFromResources(jsonErrorFilePath, resourceAssembly);
-
+                    string jsonErrorFilePath = $"{".."}/{resourceAssembly.GetName().Name}/{Settings.ResourceFolderName}/{Settings.ErrorsFileName}-{currentLanguage}.json";
+                    var fileData = GetFromResources(jsonErrorFilePath);
                     messages = JsonSerializer.Deserialize<Dictionary<string, string>>(fileData);
                 }
                 catch
@@ -92,66 +83,14 @@ namespace NAFCommon.Base.Common.MethodResult
             return defaultErrorMessage;
         }
 
-        public static string GetWarningMessage(string errorCode, ref ConcurrentDictionary<string, Dictionary<string, string>> warningMessages, Assembly resourceAssembly)
+        public static string GetFromResources(string resourceName)
         {
-            string defaultWarningMessage = "No pre-defined warning message";
-
-            if (resourceAssembly == null) return defaultWarningMessage;
-
-            Dictionary<string, string> messages = null;
-
-            //var currentLanguage = CultureInfo.DefaultThreadCurrentCulture.TwoLetterISOLanguageName;
-            var currentLanguage = "vn";
-
-            var dictionaryKey = $"{resourceAssembly.GetName().Name}@@{currentLanguage}";
-
-            try
+            var data = "";
+            using (StreamReader r = new StreamReader(resourceName))
             {
-                if (_warningMessage != null)
-                {
-                    messages = _warningMessage[dictionaryKey];
-                }
+                data = r.ReadToEnd();
             }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            if (messages == null)
-            {
-                try
-                {
-                    string jsonErrorFilePath = $"{Settings.ResourceFolderName}.{Settings.WarningsFileName}-{currentLanguage}.json";
-
-                    var fileData = GetFromResources(jsonErrorFilePath, resourceAssembly);
-
-                    messages = JsonSerializer.Deserialize<Dictionary<string, string>>(fileData);
-                }
-                catch
-                {
-                    messages = new Dictionary<string, string>();
-                }
-
-                if (messages != null)
-                {
-                    warningMessages ??= new ConcurrentDictionary<string, Dictionary<string, string>>();
-
-                    warningMessages[dictionaryKey] = messages;
-                }
-            }
-
-            defaultWarningMessage = messages.Keys.Contains(errorCode) ? messages[errorCode] : defaultWarningMessage;
-
-            return defaultWarningMessage;
-        }
-
-        public static string GetFromResources(string resourceName, Assembly resourceAssembly)
-        {
-            using Stream stream = resourceAssembly.GetManifestResourceStream(resourceAssembly.GetName().Name + '.' + resourceName);
-
-            using var reader = new StreamReader(stream);
-
-            return reader.ReadToEnd();
+            return data;
         }
     }
 }

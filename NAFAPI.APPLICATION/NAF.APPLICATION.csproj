@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common.Base\NAFCommon.Base.csproj" />
     <ProjectReference Include="..\NAFAPI.DOMAIN\NAF.DOMAIN.csproj" />
     <ProjectReference Include="..\NAFAPI.INFRASTRUCTURE\NAF.INFRASTRUCTURE.csproj" />
   </ItemGroup>

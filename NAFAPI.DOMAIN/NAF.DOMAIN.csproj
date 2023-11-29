@@ -5,16 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common.Base\NAFCommon.Base.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Services\Account\Login\" />
     <Folder Include="Parameters\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NAFCommon.Base\NAFCommon.Base.csproj" />
   </ItemGroup>
 
 </Project>
